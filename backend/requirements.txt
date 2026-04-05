@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────
+#  PathFinder AI — Python Dependencies
+#  Python 3.12 | Last verified: 2025
+#
+#  Install order (Windows / all platforms):
+#    1. pip install --upgrade pip
+#    2. pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+#    3. pip install -r requirements.txt
+# ─────────────────────────────────────────────
+
+# Web Framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
+
+# Environment & Config
+python-dotenv==1.0.1
+
+# Database (MongoDB async driver)
+# motor 3.6 requires pymongo >=4.5,<5 — pymongo 4.9.2 satisfies both
+motor==3.6.0
+pymongo==4.9.2
+
+# PDF Parsing
+PyPDF2==3.0.1
+
+# NLP — spaCy
+spacy==3.8.2
+
+# Semantic Similarity — Sentence-BERT
+# Install torch separately first (see header), then install this file
+sentence-transformers==3.3.1
+torch==2.5.1
+transformers==4.46.3
+
+# Google Gemini API
+google-generativeai==0.8.3
+
+# HTTP Client (for GitHub & YouTube APIs)
+httpx==0.28.0
+aiohttp==3.11.8
+
+# Data Validation (Pydantic v2, ships with FastAPI)
+pydantic==2.10.2
+pydantic-settings==2.6.1
+
+# Utilities
+numpy==1.26.4
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
