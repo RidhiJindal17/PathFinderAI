@@ -182,6 +182,7 @@ async def _run_pipeline(
         "roadmap":                 roadmap_data.get("roadmap", []),
         "estimated_time":          roadmap_data.get("estimated_time", ""),
         "final_summary":           roadmap_data.get("final_summary", ""),
+        "suitable_roles":          roadmap_data.get("suitable_roles", []),
         "confidence_score":        roadmap_data.get("confidence_score", ""),
         "skill_gap_percentage":    roadmap_data.get("skill_gap_percentage", 0),
         "analysis_note":           gap_data.get("analysis_note"),
@@ -494,6 +495,7 @@ def _build_response(doc: dict) -> FullAnalysisResponse:
         roadmap                 = roadmap,
         estimated_time          = doc.get("estimated_time", ""),
         final_summary           = doc.get("final_summary", ""),
+        suitable_roles          = doc.get("suitable_roles", []),
         confidence_score        = doc.get("confidence_score", ""),
         skill_gap_percentage    = doc.get("skill_gap_percentage", 0),
 

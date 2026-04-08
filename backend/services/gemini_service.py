@@ -222,28 +222,34 @@ def translate_to_professional(informal_text: str) -> dict[str, str]:
     if not informal_text.strip():
         return {"polished_text": "No input provided.", "tone": "neutral"}
 
-    prompt = f"""You are a Senior Technical Recruiter and ATS Optimization Expert.
-    
-    TASK:
-    Upgrade the following informal experience into a HIGH-IMPACT, ATS-OPTIMIZED resume bullet point.
-    
-    RULES:
-    1. START with a strong action verb (e.g., Achieved, Developed, Led, Built, Completed, Implemented, Spearheaded, Orchestrated).
-    2. EXPAND short sentences into meaningful professional statements.
-    3. INCLUDE domain-specific keywords and technical terminology.
-    4. INFER and ADD implied impact: mention specific skills gained, tools used, or quantifiable outcomes (use '~' for estimated numbers).
-    5. LENGTH: 1–2 lines max.
-    6. TONE: Professional, impressive, and recruiter-ready.
-    7. DO NOT just rewrite words; transform them into a professional achievement.
-    
-    INPUT: "{informal_text.strip()}"
-    
-    OUTPUT FORMAT (JSON):
-    {{
-      "polished_text": "The high-impact bullet point",
-      "tone": "professional"
-    }}
-    """
+    prompt = f"""You are a working corporate professional (not an AI, not a recruiter).
+
+Rewrite the following informal statement into a NATURAL, PROFESSIONAL resume bullet point.
+
+IMPORTANT RULES:
+* Write like a real employee, not like AI-generated content
+* Keep it simple, clear, and believable
+* Avoid overuse of buzzwords like "spearheaded", "orchestrated", "leveraged"
+* Use normal action verbs like: Improved, Built, Developed, Fixed, Created
+* Keep it 1–2 lines max
+* Add impact if possible (numbers, improvements, results)
+* Make it sound like something a real person would actually say in a resume
+
+BAD EXAMPLE:
+"Spearheaded optimization of system performance..."
+
+GOOD EXAMPLE:
+"Improved system performance by fixing startup issues and malware, reducing boot time by ~25%."
+
+INPUT:
+"{informal_text.strip()}"
+
+OUTPUT (JSON):
+{{
+"polished_text": "your improved sentence",
+"tone": "natural_professional"
+}}
+"""
 
     try:
         raw_response = _call_gemini(prompt)
@@ -256,11 +262,11 @@ def translate_to_professional(informal_text: str) -> dict[str, str]:
             text = re.sub(r"^```(json)?", "", text, flags=re.IGNORECASE)
             text = re.sub(r"```$", "", text)
             text = re.sub(r"^[•\-\*\"`']+\s*", "", text.strip())
-            return {"polished_text": text.strip().strip('"'), "tone": "professional"}
+            return {"polished_text": text.strip().strip('"'), "tone": "natural_professional"}
             
         return {
             "polished_text": parsed["polished_text"],
-            "tone": parsed.get("tone", "professional")
+            "tone": parsed.get("tone", "natural_professional")
         }
     except Exception as exc:
         logger.error(f"Translation failed: {exc}")

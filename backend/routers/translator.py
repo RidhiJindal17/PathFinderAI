@@ -14,11 +14,11 @@ router = APIRouter()
 @router.post(
     "/translate",
     response_model=TranslatorResponse,
-    summary="Rewrite informal experience into professional language (also at /api/roadmap/translate)",
+    summary="Rewrite informal experience into a natural, professional resume bullet point",
 )
 async def translate_experience(payload: TranslatorRequest):
     """
-    Accepts informal work experience and rewrites it as a professional
+    Accepts informal work experience and rewrites it as a natural, professional
     resume bullet point using Google Gemini.
     """
     if not payload.informal_text.strip():
