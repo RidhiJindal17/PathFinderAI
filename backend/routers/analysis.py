@@ -51,7 +51,7 @@ from models.analysis import (
     MissingSkillResource,
 )
 from services.database import get_report, list_reports, save_report
-from services.gemini_service import generate_xai_roadmap, infer_required_skills
+from services.gemini_service import generate_xai_roadmap, infer_required_skills, extract_skills_ai
 from services.github_service import get_portfolio_summary
 from services.resume_parser import parse_resume
 from services.skill_gap_analyzer import analyze_gap, extract_skills_from_jd
@@ -98,12 +98,15 @@ async def _run_pipeline(
     logger.info(f"[{report_id}] Step 2 — Gathering job requirements (Hybrid) …")
     jd_skills = extract_skills_from_jd(job_description)
     
-    # If the JD is too sparse (less than 3 skills identified), infer from job title
-    if len(jd_skills) < 3:
-        logger.info(f"[{report_id}] JD sparse ({len(jd_skills)} skills) — inferring from title: '{job_title}'")
-        inferred = infer_required_skills(job_title)
-        # Merge uniquely
-        jd_skills = sorted(list(set(jd_skills + inferred)))
+    if len(jd_skills) < 5:
+        logger.info(f"[{report_id}] JD sparse ({len(jd_skills)} skills) — calling AI extraction")
+        ai_jd_skills = extract_skills_ai(job_description)
+
+        if not ai_jd_skills:
+            logger.info(f"[{report_id}] AI extraction failed — inferring from job title")
+            ai_jd_skills = infer_required_skills(job_title)
+
+        jd_skills = sorted(list(set(jd_skills + ai_jd_skills)))
         logger.info(f"[{report_id}] Hybrid extraction complete — Total skills: {len(jd_skills)}")
 
     gap_data = analyze_gap(
@@ -221,7 +224,7 @@ async def _run_pipeline(
         full_report["missing_skills_detailed"] = [
             {
                "skill": b["skill"],
-               "why_important": "Critical requirement identified by Semantic Analysis.",
+               "why_important": "",
                "impact_if_missing": f"Gaps in {b['skill']} significantly reduce your role compatibility.",
                "priority": b["priority"].capitalize()
             }

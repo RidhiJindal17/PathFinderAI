@@ -215,9 +215,6 @@ export default function ReportPage() {
                         Lack of {item.skill} proficiency
                         <SkillChip skill={item.priority} variant={item.priority?.toLowerCase()} />
                       </h4>
-                      <p className="text-slate-300 text-sm leading-relaxed mb-2">
-                        {item.why_important}
-                      </p>
                       <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-800">
                         <p className="text-xs text-rose-300/80 font-medium uppercase tracking-wider mb-1">Impact on Selection</p>
                         <p className="text-sm text-slate-400 italic">

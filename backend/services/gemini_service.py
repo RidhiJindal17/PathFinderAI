@@ -211,6 +211,52 @@ def infer_required_skills(job_title: str) -> list[str]:
     return ["communication", "problem solving", "git", "linux"]
 
 
+def extract_skills_ai(text: str) -> list[str]:
+    """
+    Extract all relevant professional skills from the text using Gemini AI.
+    Features: Domain-independent, dynamic extraction.
+    """
+    if not text or not text.strip():
+        return []
+
+    # Limit input text for performance
+    sample_text = text[:2000].strip()
+
+    prompt = f"""You are an expert recruiter and skill extraction engine.
+TASK: Extract ALL professional skills, technologies, and competencies mentioned in the text below.
+
+RULES:
+- Return ONLY a clean Python-style list of lowercase strings.
+- Example Output: ["python", "project management", "nursing", "litigation"]
+- Remove duplicates.
+- If no skills are found, return exactly: []
+
+TEXT:
+"{sample_text}"
+"""
+
+    try:
+        raw_response = _call_gemini(prompt)
+        # Use regex to find the list part if Gemini adds commentary
+        match = re.search(r"\[.*\]", raw_response, re.DOTALL)
+        if match:
+            skills_raw = match.group(0)
+            # Safe-ish evaluation or just string manipulation
+            # Replacing single quotes with double quotes for valid JSON-like list
+            skills_raw = skills_raw.replace("'", '"')
+            skills = json.loads(skills_raw)
+            if isinstance(skills, list):
+                return sorted(list(set(str(s).lower().strip() for s in skills if s)))
+        
+        # Fallback split logic if no [ ] found
+        skills = [s.strip().lower() for s in raw_response.split(",") if s.strip()]
+        return sorted(list(set(skills)))
+
+    except Exception as exc:
+        logger.warning(f"AI skill extraction failed: {exc}")
+        return []
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  3. CORPORATE TRANSLATOR
 # ══════════════════════════════════════════════════════════════════════════════

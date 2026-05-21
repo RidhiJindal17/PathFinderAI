@@ -27,6 +27,7 @@ from spacy.language import Language
 from PyPDF2 import PdfReader
 
 from config import settings
+from services.gemini_service import extract_skills_ai
 
 logger = logging.getLogger(__name__)
 
@@ -535,7 +536,13 @@ def parse_resume(file_bytes: bytes) -> dict:
     # ── Step 3–7: Run all extractors ─────────────────────────────────────────
     entities = extract_entities(raw_text)
     result.update(entities)
-    result["skills"]     = extract_skills(raw_text)
+    
+    # Hybrid Skill Extraction
+    keyword_skills = extract_skills(raw_text)
+    ai_skills = extract_skills_ai(raw_text)
+    final_skills = list(set(keyword_skills + ai_skills))
+    result["skills"] = sorted(final_skills)
+
     result["education"]  = extract_education(doc)
     result["experience"] = extract_experience(doc)
     result["projects"]   = extract_projects(raw_text)
